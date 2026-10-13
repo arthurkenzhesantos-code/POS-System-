@@ -1,0 +1,65 @@
+{
+  "products": {
+    "ZF1": {
+      "product_code": "ZF1",
+      "name": "Porksilog",
+      "price": 8000,
+      "stock": 18
+    },
+    "ZF2": {
+      "product_code": "ZF2",
+      "name": "Beef Tapa Bowl",
+      "price": 9500,
+      "stock": 12
+    },
+    "ZF3": {
+      "product_code": "ZF3",
+      "name": "Cheese Burger",
+      "price": 6500,
+      "stock": 16
+    },
+    "ZF4": {
+      "product_code": "ZF4",
+      "name": "French Fries",
+      "price": 4500,
+      "stock": 22
+    },
+    "ZF5": {
+      "product_code": "ZF5",
+      "name": "Chicken Siomai (4 pcs)",
+      "price": 4000,
+      "stock": 25
+    },
+    "ZF6": {
+      "product_code": "ZF6",
+      "name": "Iced Tea",
+      "price": 2500,
+      "stock": 40
+    },
+    "ZF7": {
+      "product_code": "ZF7",
+      "name": "Iced Coffee",
+      "price": 5500,
+      "stock": 24
+    },
+    "ZF8": {
+      "product_code": "ZF8",
+      "name": "Bottled Water",
+      "price": 2000,
+      "stock": 50
+    },
+    "ZF9": {
+      "product_code": "ZF9",
+      "name": "Leche Flan Cup",
+      "price": 4000,
+      "stock": 10
+    },
+    "ZF10": {
+      "product_code": "ZF10",
+      "name": "Pancit Canton",
+      "price": 5500,
+      "stock": 20
+    }
+  },
+  "transactions": []
+}
