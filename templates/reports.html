@@ -10,7 +10,7 @@
 <section class="panel"><div class="panel-heading"><div><h2>Transaction history</h2><p class="muted">Newest first</p></div></div>
 <div class="table-wrap"><table><thead><tr><th>Date</th><th>Transaction ID</th><th>Items</th><th>Subtotal</th><th>Discount</th><th>Total</th><th>Payment</th><th>Change</th></tr></thead><tbody>
 {% for t in transactions %}
-<tr><td>{{ t.date.replace('T',' ') }}</td><td class="code">{{ t.transaction_id }}</td><td>{% for item in t.items %}<div>{{ item.name }} × {{ item.quantity }}</div>{% endfor %}</td><td>{{ t.subtotal|money }}</td><td>{{ t.discount|money }}</td><td class="price">{{ t.total|money }}</td><td>{{ t.payment|money }}</td><td>{{ t.change|money }}</td></tr>
+<tr><td>{{ t.date.replace('T',' ') }}</td><td class="code">{{ t.transaction_id }}</td><td>{% for item in t['items'] %}<div>{{ item.name }} × {{ item.quantity }}</div>{% endfor %}</td><td>{{ t.subtotal|money }}</td><td>{{ t.discount|money }}</td><td class="price">{{ t.total|money }}</td><td>{{ t.payment|money }}</td><td>{{ t.change|money }}</td></tr>
 {% else %}<tr><td colspan="8" class="empty">No completed transactions yet.</td></tr>{% endfor %}
 </tbody></table></div></section>
 {% endblock %}
