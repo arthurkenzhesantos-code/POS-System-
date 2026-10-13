@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}Products & Stock | ZingFoodie{% endblock %}
+{% block content %}
+<section class="page-heading"><div><p class="eyebrow">INVENTORY</p><h1>Products & stock</h1><p class="muted">Add, edit, delete, search products, and replenish stock.</p></div><a class="button secondary" href="{{ url_for('index') }}">← Back to POS</a></section>
+<div class="admin-grid">
+  <section class="panel"><h2>Add product</h2>
+    <form class="stack-form" method="post" action="{{ url_for('add_product') }}">
+      <label>Product code<input name="product_code" placeholder="e.g. ZF11" required></label>
+      <label>Product name<input name="name" placeholder="Product name" required></label>
+      <div class="two-fields"><label>Price (₱)<input name="price" type="number" min="0.01" step="0.01" required></label><label>Starting stock<input name="stock" type="number" min="0" step="1" required></label></div>
+      <button class="button" type="submit">Add product</button>
+    </form>
+  </section>
+  <section class="panel"><h2>Search inventory</h2><form class="search" method="get" action="{{ url_for('admin') }}"><input name="q" value="{{ query }}" placeholder="Search code or name"><button class="button">Search</button>{% if query %}<a class="button secondary" href="{{ url_for('admin') }}">Clear</a>{% endif %}</form><p class="muted">To replenish an item, enter the new total stock in the Stock column below. This works even when stock reaches zero.</p></section>
+</div>
+<section class="panel"><div class="panel-heading"><div><h2>Inventory list</h2><p class="muted">{{ products|length }} product(s) shown</p></div></div>
+<div class="table-wrap"><table><thead><tr><th>Code</th><th>Edit product</th><th>Price (₱)</th><th>Stock</th><th>Actions</th></tr></thead><tbody>
+{% for p in products %}
+<tr><form id="edit-{{ p.product_code }}" method="post" action="{{ url_for('edit_product') }}"></form>
+<td><span class="code">{{ p.product_code }}</span><input type="hidden" name="product_code" value="{{ p.product_code }}" form="edit-{{ p.product_code }}"></td>
+<td><input class="table-input name-input" name="name" value="{{ p.name }}" required form="edit-{{ p.product_code }}"></td>
+<td><input class="table-input" name="price" type="number" min="0.01" step="0.01" value="{{ '%.2f'|format(p.price / 100) }}" required form="edit-{{ p.product_code }}"></td>
+<td><input class="table-input stock-input" name="stock" type="number" min="0" step="1" value="{{ p.stock }}" required form="edit-{{ p.product_code }}"></td>
+<td><div class="action-buttons"><button class="button small" type="submit" form="edit-{{ p.product_code }}">Save</button>
+<form method="post" action="{{ url_for('delete_product') }}" data-confirm="Permanently delete {{ p.name }}?"><input type="hidden" name="product_code" value="{{ p.product_code }}"><button class="button small danger" type="submit">Delete</button></form></div></td>
+</tr>
+{% else %}<tr><td colspan="5" class="empty">No products found.</td></tr>{% endfor %}
+</tbody></table></div>
+</section>
+{% endblock %}

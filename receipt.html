@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}Receipt | ZingFoodie{% endblock %}
+{% block content %}
+<section class="receipt panel">
+  <div class="receipt-header"><span class="brand-mark">ZF</span><p class="eyebrow">ZINGFOODIE</p><h1>Payment receipt</h1><p class="muted">Thank you for your purchase!</p></div>
+  <div class="receipt-meta"><span>Transaction ID</span><strong>{{ transaction.transaction_id }}</strong><span>Date</span><strong>{{ transaction.date.replace('T',' ') }}</strong></div>
+  <div class="table-wrap"><table><thead><tr><th>Item</th><th>Qty</th><th>Unit price</th><th>Subtotal</th></tr></thead><tbody>{% for item in transaction.items %}
+  <tr><td>{{ item.name }}</td><td>{{ item.quantity }}</td><td>{{ item.unit_price|money }}</td><td>{{ item.subtotal|money }}</td></tr>{% endfor %}</tbody></table></div>
+  <div class="receipt-totals"><div><span>Subtotal</span><strong>{{ transaction.subtotal|money }}</strong></div><div><span>{{ transaction.discount_label|default('Discount') }} ({{ transaction.discount_rate|default(0) }}%)</span><strong>−{{ transaction.discount|money }}</strong></div><div class="grand-total"><span>Total paid</span><strong>{{ transaction.total|money }}</strong></div><div><span>Payment</span><strong>{{ transaction.payment|money }}</strong></div><div><span>Change</span><strong>{{ transaction.change|money }}</strong></div></div>
+  <div class="receipt-actions"><button class="button" onclick="window.print()">Print receipt</button><a class="button secondary" href="{{ url_for('index') }}">New transaction</a><a class="button secondary" href="{{ url_for('reports') }}">Sales report</a></div>
+</section>
+{% endblock %}

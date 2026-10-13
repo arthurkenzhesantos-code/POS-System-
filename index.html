@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+{% block title %}POS Checkout | ZingFoodie{% endblock %}
+{% block content %}
+<section class="page-heading">
+  <div><p class="eyebrow">POINT OF SALE</p><h1>New transaction</h1><p class="muted">Choose products, review the cart, apply a discount, and check out.</p></div>
+  <a class="button secondary" href="{{ url_for('admin') }}">Manage products →</a>
+</section>
+<div class="layout">
+  <section class="panel">
+    <div class="panel-heading"><div><h2>Available products</h2><p class="muted">Stock updates after successful checkout.</p></div></div>
+    <form class="search" method="get" action="{{ url_for('index') }}">
+      <input name="q" value="{{ query }}" placeholder="Search code or product name…" aria-label="Search products">
+      <button class="button" type="submit">Search</button>
+      {% if query %}<a class="button secondary" href="{{ url_for('index') }}">Clear</a>{% endif %}
+    </form>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Code</th><th>Product</th><th>Price</th><th>Stock</th><th>Add to cart</th></tr></thead>
+      <tbody>
+      {% for product in products %}
+        <tr>
+          <td><span class="code">{{ product.product_code }}</span></td><td class="product-name">{{ product.name }}</td>
+          <td class="price">{{ product.price|money }}</td>
+          <td>{% if product.stock <= 0 %}<span class="status out">Out of stock</span>{% else %}{{ product.stock }}{% endif %}</td>
+          <td><form class="add-form" method="post" action="{{ url_for('add_to_cart') }}">
+            <input type="hidden" name="product_code" value="{{ product.product_code }}">
+            <input type="hidden" name="return_q" value="{{ query }}">
+            <input class="qty-input" type="number" name="quantity" min="1" max="{{ product.stock }}" value="1" aria-label="Quantity" {% if product.stock <= 0 %}disabled{% endif %}>
+            <button class="button small" type="submit" {% if product.stock <= 0 %}disabled{% endif %}>Add</button>
+          </form></td>
+        </tr>
+      {% else %}<tr><td colspan="5" class="empty">No products matched your search.</td></tr>{% endfor %}
+      </tbody>
+    </table></div>
+  </section>
+  <aside class="panel cart-panel">
+    <div class="panel-heading"><div><p class="eyebrow">CURRENT SALE</p><h2>Your cart</h2></div><span class="count">{{ lines|length }} item type(s)</span></div>
+    {% if lines %}
+    <div class="cart-lines">
+      {% for line in lines %}
+      <div class="cart-line">
+        <div class="cart-line-top"><div><strong>{{ line.product.name }}</strong><small>{{ line.product.product_code }} · {{ line.product.price|money }} each</small></div><strong>{{ line.line_total|money }}</strong></div>
+        <div class="cart-actions">
+          <form class="inline-form" method="post" action="{{ url_for('update_cart') }}">
+            <input type="hidden" name="product_code" value="{{ line.product.product_code }}">
+            <label>Qty <input class="qty-input" type="number" min="1" max="{{ line.product.stock }}" name="quantity" value="{{ line.quantity }}"></label>
+            <button class="button secondary small" type="submit">Update</button>
+          </form>
+          <form method="post" action="{{ url_for('remove_from_cart') }}" data-confirm="Remove this entire item from the cart?">
+            <input type="hidden" name="product_code" value="{{ line.product.product_code }}">
+            <button class="text-button danger-text" type="submit">Remove item</button>
+          </form>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    <form method="post" action="{{ url_for('clear_cart') }}" data-confirm="Clear the whole cart?">
+      <button class="text-button" type="submit">Clear entire cart</button>
+    </form>
+    <form class="discount-form" method="post" action="{{ url_for('set_discount') }}">
+      <label for="discount">Discount option</label>
+      <div class="discount-row"><select id="discount" name="discount">
+        <option value="none" {% if discount_rate == 0 %}selected{% endif %}>No Discount (0%)</option>
+        <option value="senior" {% if discount_rate == 20 %}selected{% endif %}>Senior Citizen (20%)</option>
+        <option value="student" {% if discount_rate == 10 %}selected{% endif %}>Student (10%)</option>
+      </select><button class="button secondary small">Apply</button></div>
+    </form>
+    <div class="totals">
+      <div><span>Subtotal</span><strong>{{ subtotal|money }}</strong></div>
+      <div><span>{{ discount_label }} discount ({{ discount_rate }}%)</span><strong>−{{ discount|money }}</strong></div>
+      <div class="grand-total"><span>Total due</span><strong>{{ total|money }}</strong></div>
+    </div>
+    <form class="checkout-form" method="post" action="{{ url_for('checkout') }}">
+      <label for="payment">Payment received (₱)</label>
+      <input id="payment" name="payment" type="number" min="0" step="0.01" placeholder="e.g. 500.00" required>
+      <button class="button checkout-button" type="submit">Complete checkout</button>
+      <p class="hint">Stock is deducted only after valid payment and successful checkout.</p>
+    </form>
+    {% else %}
+      <div class="cart-empty"><div class="empty-icon">＋</div><h3>Your cart is empty</h3><p>Add an item from the product list to start a sale.</p></div>
+    {% endif %}
+  </aside>
+</div>
+{% if transactions %}
+<section class="panel recent-panel"><div class="panel-heading"><div><h2>Recent transactions</h2><p class="muted">Latest completed sales</p></div><a href="{{ url_for('reports') }}">View all reports →</a></div>
+<div class="table-wrap"><table><thead><tr><th>Date</th><th>Transaction ID</th><th>Items</th><th>Total</th></tr></thead><tbody>
+{% for t in transactions %}<tr><td>{{ t.date.replace('T',' ') }}</td><td class="code">{{ t.transaction_id }}</td><td>{{ t.items|sum(attribute='quantity') }}</td><td class="price">{{ t.total|money }}</td></tr>{% endfor %}
+</tbody></table></div></section>
+{% endif %}
+{% endblock %}
